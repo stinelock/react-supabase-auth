@@ -1,4 +1,4 @@
-import { Form, Link, redirect, useActionData } from "react-router";
+import { Form, Link, redirect, useActionData, useNavigation } from "react-router";
 import { supabase } from "../lib/supabase";
 
 export async function clientAction({ request }) {
@@ -31,6 +31,8 @@ export async function clientAction({ request }) {
 
 export default function Register() {
 	const actionData = useActionData();
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === "submitting"
 
 	return (
 		<div className="auth-container">
@@ -81,8 +83,8 @@ export default function Register() {
 					{actionData?.error && (
 						<div className="error-message">{actionData.error}</div>
 					)}
-					<button type="submit" className="btn-primary">
-						Create Account
+					<button type="submit" disabled={isSubmitting} className="btn-primary">
+						{isSubmitting ? "Creating account..." : "Create Account"}
 					</button>
 				</Form>
 
