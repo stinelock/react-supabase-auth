@@ -8,5 +8,13 @@ export async function apiFetch(path, options = {}) {
 		data: { session },
 	} = await supabase.auth.getSession();
 
-    const token = session?.access_token;
+	const token = session?.access_token;
+
+	const headers = { ...options.headers, apiKey: supabaseAnonKey };
+
+	if (token) {
+		headers.Authorization = `Bearer ${token}`;
+	}
+
+	return fetch(`${supabaseUrl}${path}`, { ...options, headers });
 }
