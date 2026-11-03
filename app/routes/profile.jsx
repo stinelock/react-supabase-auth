@@ -2,6 +2,21 @@ import { Link, redirect, useLoaderData, Form } from "react-router";
 import { supabase } from "../lib/supabase";
 
 export async function clientLoader() {
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
+
+	console.log(session?.access_token);
+
+	const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+	const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+		headers: {
+			apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+			Authorization: `Bearer ${session?.access_token}`,
+		},
+	});
+	console.log(response.status, await response.json());
+
 	const { data, error } = await supabase.auth.getUser();
 
 	if (error || !data.user) {
