@@ -6,8 +6,6 @@ export async function clientLoader() {
 		data: { session },
 	} = await supabase.auth.getSession();
 
-	console.log(session?.access_token);
-
 	const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 	const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
 		headers: {
@@ -15,15 +13,13 @@ export async function clientLoader() {
 			Authorization: `Bearer ${session?.access_token}`,
 		},
 	});
-	console.log(response.status, await response.json());
 
-	const { data, error } = await supabase.auth.getUser();
-
-	if (error || !data.user) {
-		return redirect("/");
+	if (!response.ok) {
+		return redirect("/login");
 	}
 
-	return { user: data.user };
+	const user = await response.json();
+	return { user };
 }
 
 export async function clientAction() {
