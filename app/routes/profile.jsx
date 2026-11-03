@@ -1,14 +1,16 @@
 import { Link, redirect, useLoaderData, Form } from "react-router";
 import { supabase } from "../lib/supabase";
+import { apiFetch } from "../lib/apiFetch";
 
 export async function clientLoader() {
-	const { data, error } = await supabase.auth.getUser();
+	const response = await apiFetch("/auth/v1/user");
 
-	if (error || !data.user) {
-		return redirect("/");
+	if (!response.ok) {
+		return redirect("/login");
 	}
 
-	return { user: data.user };
+	const user = await response.json();
+	return { user };
 }
 
 export async function clientAction() {
